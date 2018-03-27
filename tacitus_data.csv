@@ -1,0 +1,6 @@
+text_name,num_sentences,num_words,num_chars,num_noun,num_verb,num_particple,num_adjective,num_adverb,num_conjunction,num_preposition,num_pronoun,num_numeral,num_interjection,num_exclamation,num_punctuation,num_unknown,num_-,num_untagged
+agri,297,6879,42136,2461,940,367,715,671,778,391,290,11,0,1,0,0,4,250
+ann,4138,91290,561472,33025,12700,5108,9135,7727,8703,5591,4498,174,0,14,0,0,88,4527
+dialogus,344,9409,54586,2800,1418,329,837,1042,1432,543,795,16,0,10,0,0,0,187
+ger,310,5696,33382,1917,868,231,553,536,672,334,261,2,0,0,0,0,0,322
+hist,2453,52614,328798,20168,6959,2904,5835,4118,4839,3163,2147,100,0,1,0,0,7,2373

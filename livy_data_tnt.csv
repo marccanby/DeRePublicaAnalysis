@@ -1,0 +1,4 @@
+text_name,num_sentences,num_words,num_chars,num_noun,num_verb,num_particple,num_adjective,num_adverb,num_conjunction,num_preposition,num_pronoun,num_numeral,num_interjection,num_exclamation,num_punctuation,num_unknown,num_-,num_untagged
+,22983,539148,3125814,103721,38267,10825,31372,37972,41554,42460,35195,3851,0,94,2,166273,259,27303
+per,1889,23227,132346,4435,1406,605,814,692,1336,2114,1181,165,0,4,1,9183,13,1278
+pr,13,499,2750,79,47,4,36,50,59,28,43,0,0,0,0,129,0,24
