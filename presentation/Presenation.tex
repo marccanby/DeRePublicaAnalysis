@@ -178,13 +178,60 @@ subsectionstyle=show/show/shaded
 \end{frame}
 
 
+
+
 \section{Exploratory Text Analysis}
+
+\begin{frame}{Exploratory Text Analysis: Tokenization and POS Tagging}
+\begin{itemize}
+	\item Map each word to its base form (\textit{lemma} or \textit{token}) and its POS
+	\item Often ignore \textit{stop words} ('et', 'sum', etc.) $-$ highlighted in red
+\end{itemize}
+\begin{center}
+	{\ttfamily ['nempe',
+		'ab',
+		'iis',
+		'qui',
+		'haec',
+		'disciplinis',
+		'informata',
+		'alia',
+		'moribus',
+		'confirmarunt',
+		',',
+		'sanxerunt',
+		'autem',
+		'alia',
+		'legibus',
+		'.']}
+	\vspace{12pt}
+	
+	{\ttfamily[('nempe', 'adverb'),
+		{\color{red} ('ab', 'preposition')},
+		{\color{red}('is', 'pronoun')},
+		{\color{red}('qui', 'pronoun')},
+		{\color{red}('hic', 'pronoun')},
+		('disciplina', 'noun'),
+		('informo', 'noun'),
+		('alius2', 'adjective'),
+		('mos', 'noun'),
+		('confirmo', 'verb'),
+		('sancio', 'verb'),
+		{\color{red}('autem', 'conjunction')},
+		('alius2', 'adjective'),
+		('lex', 'noun')]}
+	
+\end{center}
+\end{frame}
+
 \begin{frame}{Exploratory Text Analysis}
 \begin{itemize}
 	\item Number of characters: 109,777 \tab (\textit{average:} 136,893)
 	\item Number of words: 20,067 \tab (\textit{average:} 24,924)
 	\item Number of sentences: 820 \tab (\textit{average:} 1,059)
 \end{itemize}
+
+
 
 \begin{figure}
 	\centering
@@ -202,10 +249,40 @@ subsectionstyle=show/show/shaded
 
 \begin{frame}{Keyword Extraction: Frequency Count}
 \begin{itemize}
+		\setlength\itemsep{1em}
 	\item Goal: Determine a set of keywords that summarizes the text
-	\item Naive approach: Take words in text with highest frequency:
+	\item Naive approach: Take words in text with highest frequency
+	\begin{center}
+	\begin{tabular}{| c | c || c | c |}
+		\hline
+		\textbf{Word} & \textbf{Frequency} & \textbf{Word} & \textbf{Frequency} \\ \hline
+		res & 191 & magnus & 74 \\ \hline
+		publicus & 163 & civitas & 72 \\ \hline
+		Scipio & 110 & bonus & 70  \\ \hline
+		populus & 103 & Laelius & 66  \\ \hline
+		homo & 94 & rex & 51  \\
+		\hline
+\end{tabular}\\
+\footnotesize{Note: Restricted to nouns and adjectives only}
+\end{center}
+	
 	\item Problem: Does not account for structure of text and relationships between words
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Keyword Extraction: TextRank}
+TextRank is a popular keyword extraction algorithm that determines the importance of a keyword based on its relationship to other keywords.
+\begin{itemize}
+
+	\item Step 1: Build graph representing text
+	\item Step 2: Run keyword extraction algorithm on graph
+	\item Step 3: Merge neighboring keywords and recompute scores
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{TextRank: Step 1 (Build graph representing text)}
+
 \end{frame}
 
 \section{Predicting Missing Text: LSTM Neural Networks}

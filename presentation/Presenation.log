@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  27 MAR 2018 01:25
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  27 MAR 2018 04:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1413,18 +1413,24 @@ File: eu1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 ]
 (./Presenation.toc) [5
 
+] [6
+
 ]
 File: fig1.png Graphic file (type QTm)
  <use  "fig1.png" >
 File: fig2.png Graphic file (type QTm)
- <use  "fig2.png" > [6
+ <use  "fig2.png" > [7
 
 ]
-(./Presenation.toc) [7
+(./Presenation.toc) [8
 
-] [8
+] [9
 
-] (./Presenation.toc) [9
+] [10
+
+] [11
+
+] (./Presenation.toc) [12
 
 ]
 \tf@nav=\write6
@@ -1436,20 +1442,21 @@ File: fig2.png Graphic file (type QTm)
 \tf@snm=\write8
 \openout8 = `Presenation.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 319.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 319.
- (./Presenation.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 319.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 319.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 319.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 396.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 396.
+
+(./Presenation.aux)
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 396.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 396.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 396.
  ) 
 Here is how much of TeX's memory you used:
- 33628 strings out of 493706
- 655571 string characters out of 6145769
- 714766 words of memory out of 5000000
- 36440 multiletter control sequences out of 15000+600000
- 9822 words of font info for 65 fonts, out of 8000000 for 9000
+ 33636 strings out of 493706
+ 655696 string characters out of 6145769
+ 714898 words of memory out of 5000000
+ 36446 multiletter control sequences out of 15000+600000
+ 9838 words of font info for 67 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
  56i,16n,58p,10403b,592s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on Presenation.pdf (9 pages).
+Output written on Presenation.pdf (12 pages).

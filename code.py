@@ -1,12 +1,5 @@
 # DE RE PUBLICA
-import numpy as np
-from keras.utils import np_utils
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import Dropout
-from keras.layers import LSTM
-from keras.callbacks import ModelCheckpoint
-from keras.callbacks import EarlyStopping
+
 
 ##### Step 1: Read in and clean up text ####
 from cltk.corpus.latin import latinlibrary
@@ -365,6 +358,9 @@ for sent in repub_tokens:
 split_text = [item for sublist in list(map(split_sent, republica_text)) for item in sublist]
 text_split_punc = [item.lower() for sublist in republica_text for item in sublist]
 
+with open ("text_split_punc.txt", "w") as buf:
+	buf.write(str(text_split_punc))
+
 ranking = keywords.keywords({"tokens": repub_tokens_sus, "split_text": split_text, "text_split_punc": text_split_punc}, scores = True)
 
 
@@ -526,9 +522,18 @@ def analyze_region(region_wds):
 
 
 
+##### Part 6. Text Generation
+import numpy as np
+from keras.utils import np_utils
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Dropout
+from keras.layers import LSTM
+from keras.callbacks import ModelCheckpoint
+from keras.callbacks import EarlyStopping
 
-
-raw_text = sentence_stringer(list(map(sentence_joiner, cicero_texts['repub'])))
+with open("repub.txt", "r") as buf:
+	raw_text = buf.read()
 
 
 # create mapping of unique chars to integers
@@ -567,7 +572,7 @@ model.add(Dense(y.shape[1], activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 
 # define the checkpoint
-filepath="weights-improvement-{epoch:02d}-{loss:.4f}-bigger.hdf5"
+filepath="new_weights2/weights-improvement-{epoch:02d}-{loss:.4f}-bigger.hdf5"
 modelCheckpoint = ModelCheckpoint(filepath, monitor = 'loss')
 earlyStopping = EarlyStopping(monitor = 'loss')
 callbacks_list = [modelCheckpoint, earlyStopping]
@@ -575,24 +580,75 @@ callbacks_list = [modelCheckpoint, earlyStopping]
 model.fit(X, y, epochs=50, batch_size=86, callbacks=callbacks_list)
 
 # load the network weights
-filename1 = "weights-improvement-19-2.2728.hdf5"
-filename2 = "weights-improvement-19-1.6940-bigger.hdf5"
-model.load_weights(filename2)
+filename1 = "old_weightgs/weights-improvement-19-2.2728.hdf5"
+filename2 = "old_weightgs/weights-improvement-19-1.6940-bigger.hdf5"
+filename3 = "new_weights/weights-improvement-09-1.9432-bigger.hdf5"
+model.load_weights(filename3)
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 
 int_to_char = dict((i, c) for i, c in enumerate(chars))
 
-start = 5400
+start = 5399
 pattern = dataX[start]
 print ("Seed:")
-print (''.join([int_to_char[value] for value in pattern]))
+seq = ''.join([int_to_char[value] for value in pattern])
+print (seq)
 # generate characters
 res = []
-for i in range(1000):
+
+class Node(object):
+	def __init__(self, letter, prob, level, cur_word, cum_prob, cum_seq):
+		self.prob = prob
+		self.letter = letter
+		self.level = level
+		self.children = []
+		self.cur_word = cur_word
+		self.cum_prob = cum_prob
+		self.cum_seq = cum_seq
+
+result = Node(pattern[-1], 1, 0, "", 0, seq)
+
+def is_word(wd):
+	s = ""
+	for c in wd:
+		if c in "abcdefghijklmnopqrstuvwxyz":
+			s.append(c)
+	return s in text_split_punc
+
+def start_word(wd):
+	for w in text_split_punc:
+		if len(w) >= len(wd):
+			if w[:len(wd)] == wd:
+				return True
+	return False
+
+def predict(node):
+	if node.level == 1:
+		return
+	new_seq = node.cur_seq[-100:]
+	pattern = [char_to_int[c] for c in new_seq]
+	x = np.reshape(pattern, (1, len(pattern), 1))
+	x = x / float(n_vocab)
+	prediction = model.predict(x, verbose=0)[0]
+	top_10 = prediction.argsort()[-10:][::-1]
+	for i in range(len(top_10)):
+		char = int_to_char[top_10[i]]
+		pred = prediction[top_10[i]]
+		if char not in "abcdefghijklmnopqrstuvwxyz":
+			if is_word(node.cur_word):
+				node.children.append(Node(char, pred, node.level +1, "", node.cum_prob + math.log(prob), node.cum_seq + char))
+		else:
+			if start_word(node.cur_word + char):
+				node.children.append(Node(char, pred, node.level + 1, node.cur_word + char, node.cum_prob + math.log(prob), node.cum_seq + char))
+	for child in node.children:
+		predict(child)
+
+
+for i in range(300):
 	x = np.reshape(pattern, (1, len(pattern), 1))
 	x = x / float(n_vocab)
 	prediction = model.predict(x, verbose=0)
-	index = np.argmax(prediction)
+	index = np.argmax(prediction[0])
 	result = int_to_char[index]
 	seq_in = [int_to_char[value] for value in pattern]
 	res.append(result)
