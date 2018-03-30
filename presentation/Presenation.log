@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  27 MAR 2018 04:06
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  27 MAR 2018 07:00
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1442,19 +1442,19 @@ File: fig2.png Graphic file (type QTm)
 \tf@snm=\write8
 \openout8 = `Presenation.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 396.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 396.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 436.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 436.
 
 (./Presenation.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 396.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 396.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 396.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 436.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 436.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 436.
  ) 
 Here is how much of TeX's memory you used:
- 33636 strings out of 493706
- 655696 string characters out of 6145769
- 714898 words of memory out of 5000000
- 36446 multiletter control sequences out of 15000+600000
+ 33638 strings out of 493706
+ 655712 string characters out of 6145769
+ 714957 words of memory out of 5000000
+ 36448 multiletter control sequences out of 15000+600000
  9838 words of font info for 67 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
  56i,16n,58p,10403b,592s stack positions out of 5000i,500n,10000p,200000b,80000s

@@ -265,7 +265,7 @@ lemmatizer = LemmaReplacer('latin')
 from cltk.stop.latin.stops import STOPS_LIST
 import re
 SyntacticUnit = imp.load_module("syntactic_unit", *imp.find_module("textrank/summa/syntactic_unit")).SyntacticUnit
-
+tagger = POSTag('latin')
 stop = STOPS_LIST + ['-que', '-ve', '-ne', 'edo', 'video', 'omnis', 'vel', 'quasi', 'unde', 'nunc', 'noster', 'dico', 'volo', 'jam']
 
 def get_tokens(sentence, remove_stop = True):
@@ -387,12 +387,25 @@ for i in (list(zip(ranking[0:20], final_counts[0:20]))):
 
 
 
+###### Step 4alpha. Summarize!
+summarizer = imp.load_module("summarizer", *imp.find_module("textrank/summa/summarizer"))
+
+filtered_sentences = [" ".join([x[1] for x in sent]) for sent in repub_tokens]
+original_sentences = [sentence_joiner(sent) for sent in republica_text]
+summary = summarizer.summarize({"original_sentences": original_sentences, "filtered_sentences": filtered_sentences}, scores = True, ratio = 0.01)
+summary    
+
+summary_imp = [x for x in summary]
+summary_imp.sort(key = lambda x: x[1], reverse= True)
+summary_imp
+
+
 ##### Step 5. Word2Vec #####
 import multiprocessing
 
-params={"size": 70,
+params={"size": 100,
         "alpha":0.025, 
-        "window":5, 
+        "window":6, 
         "min_count":3, 
         "max_vocab_size":None, 
         "sample":0.001, 
@@ -421,10 +434,14 @@ drp2vec = w2v.Word2Vec(
 to_use = [[x[1] for x in get_tokens(sent, remove_stop = True)] for sent in republica_text]
 
 drp2vec.build_vocab(to_use)
-drp2vec.train(sentences,total_examples=drp2vec.corpus_count,epochs=100)
+drp2vec.train(to_use,total_examples=drp2vec.corpus_count,epochs=100)
 
 from sklearn import manifold
+from sklearn.decomposition import NMF, FastICA, PCA
 tsne = manifold.TSNE(n_components=2, random_state=0)
+#tsne = PCA(n_components=2)
+#tsne = FastICA(n_components=2)
+
 all_word_vectors_matrix = drp2vec.wv.syn0
 all_word_vectors_matrix_2d = tsne.fit_transform(all_word_vectors_matrix)
 
@@ -445,7 +462,11 @@ points.head(40)
 import seaborn as sns
 import matplotlib.pyplot as plt
 sns.set_context("poster")
-points.plot.scatter("x", "y", s=10, figsize=(20, 12))
+points.plot.scatter("x", "y", s=10, figsize=(17, 9))
+ax = points.plot.scatter("x", "y", s=35, figsize=(17, 9))
+for i, point in points.iterrows():
+	ax.text(point.x + 0.005, point.y + 0.005, point.word, fontsize=11)
+
 plt.show()
 
 
@@ -500,6 +521,7 @@ plot_area_of_word("manilius")
 plot_area_of_word("societas")
 plot_area_of_word("civitas")
 plot_area_of_word("quaero")
+plot_area_of_word("rego")
 drp2vec.most_similar("socrate")
 drp2vec.most_similar("tubero")
 drp2vec.most_similar("civitas")
@@ -521,8 +543,187 @@ def analyze_region(region_wds):
 
 
 
+###### Part 5alpha. glove
+from glove import Corpus, Glove
 
-##### Part 6. Text Generation
+corpus = Corpus()
+to_use_here = [[x[1] for x in get_tokens(sent, remove_stop = True)] for sent in republica_text]
+corpus.fit(to_use_here,window=5)
+glove = Glove(no_components=100, learning_rate=0.05)
+glove.fit(corpus.matrix, epochs=100,no_threads=4,verbose=True)
+glove.add_dictionary(corpus.dictionary)
+
+glove.most_similar('rego', number=10)
+glove.most_similar('laelius', number=10)
+glove.most_similar('rex', number=10)
+glove.most_similar('animus', number=10)
+glove.most_similar('vita', number=10)
+glove.most_similar('pax',number=10)
+glove.most_similar('lex',number=10)
+glove.most_similar('puto',number=10)
+
+
+
+
+
+##### Part 5beta. W2v 2
+model = make_model(to_use)
+
+from sklearn import manifold
+from sklearn.decomposition import NMF, FastICA, PCA
+#tsne = manifold.TSNE(n_components=2, random_state=0)
+tsne = PCA(n_components=2)
+#tsne = FastICA(n_components=2)
+
+all_word_vectors_matrix = model.wv.syn0
+all_word_vectors_matrix_2d = tsne.fit_transform(all_word_vectors_matrix)
+
+import pandas as pd
+
+points = pd.DataFrame(
+    [
+        (word, coords[0], coords[1])
+        for word, coords in [
+            (word, all_word_vectors_matrix_2d[model.wv.vocab[word].index])
+            for word in model.wv.vocab
+        ]
+    ],
+    columns=["word", "x", "y"]
+)
+points.head(40)
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.set_context("poster")
+points.plot.scatter("x", "y", s=10, figsize=(17, 9))
+ax = points.plot.scatter("x", "y", s=35, figsize=(17, 9))
+for i, point in points.iterrows():
+	ax.text(point.x + 0.005, point.y + 0.005, point.word, fontsize=11)
+
+plt.show()
+
+model.most_similar('cicero')
+
+
+##### Part 6. Sentence clustering
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+tfidf = TfidfVectorizer(tokenizer = lambda x: x.split(" "))
+synopses = list(map(lambda x: " ".join(x), to_use_here))
+good_idxes = [i for i in range(len(synopses)) if synopses[i] != ""]
+synopses = list(filter(lambda x: x != "", synopses))
+X_train = tfidf.fit_transform(synopses)
+
+dist = 1 - cosine_similarity(X_train)
+terms = tfidf.get_feature_names()
+
+
+
+from sklearn.cluster import KMeans
+num_clusters = 4
+km = KMeans(n_clusters=num_clusters)
+km.fit(X_train)
+clusters = km.labels_.tolist()
+
+clusters = km.labels_.tolist()
+films = { 'synopsis': synopses, 'cluster': clusters }
+
+frame = pd.DataFrame(films, index = [clusters] , columns = ['rank', 'title', 'cluster', 'genre'])
+frame['cluster'].value_counts() #number of films per cluster (clusters from 0 to 4)
+
+
+from sklearn.manifold import MDS
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+
+order_centroids = km.cluster_centers_.argsort()[:, ::-1] 
+for i in range(num_clusters):
+    print("Cluster %d words:" % i, end='')
+    
+    to_print = ""
+    for ind in order_centroids[i, :15]: #replace 6 with n words per cluster
+    	to_print+= " " + (terms[ind])
+        #print(' %s' % vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'), end=',')
+    print(to_print) #add whitespace
+    print('\n') #add whitespace
+    
+
+
+mds = MDS(n_components=2, dissimilarity="precomputed", random_state=1)
+mds = PCA(n_components=2)
+mds = TSNE(n_components = 2)
+pos = mds.fit_transform(dist)  # shape (n_components, n_samples)
+xs, ys = pos[:, 0], pos[:, 1]
+
+#create data frame that has the result of the MDS plus the cluster numbers and titles
+cluster_names = {i:str(i) for i in range(num_clusters)}
+cluster_colors = {0: '#1b9e77', 1: '#d95f02', 2: '#7570b3', 3: '#e7298a', 4: '#66a61e', 5: '#000000'}
+df = pd.DataFrame(dict(x=xs, y=ys, label=clusters, title = clusters))
+
+#group by cluster
+groups = df.groupby('label')
+
+
+# set up plot
+fig, ax = plt.subplots(figsize=(17, 9)) # set size
+ax.margins(0.05) # Optional, just adds 5% padding to the autoscaling
+
+#iterate through groups to layer the plot
+#note that I use the cluster_name and cluster_color dicts with the 'name' lookup to return the appropriate color/label
+for name, group in groups:
+    ax.plot(group.x, group.y, marker='o', linestyle='', ms=12, 
+            label=cluster_names[name], color=cluster_colors[name], 
+            mec='none')
+    ax.set_aspect('auto')
+    ax.tick_params(\
+        axis= 'x',          # changes apply to the x-axis
+        which='both',      # both major and minor ticks are affected
+        bottom='on',      # ticks along the bottom edge are off
+        top='off',         # ticks along the top edge are off
+        labelbottom='on')
+    ax.tick_params(\
+        axis= 'y',         # changes apply to the y-axis
+        which='both',      # both major and minor ticks are affected
+        left='on',      # ticks along the bottom edge are off
+        top='off',         # ticks along the top edge are off
+        labelleft='on')
+    
+ax.legend(numpoints=1)  #show legend with only 1 point
+
+#add label in x,y position with the label as the film title
+for i in range(len(df)):
+    ax.text(df.ix[i]['x'], df.ix[i]['y'], i, size=8)  
+
+    
+
+
+
+    
+
+import random
+
+
+
+plt.show() #show the plot
+
+
+
+
+
+##### Part 6beta. Co occurrence matrix
+
+def get_cooc_matrix(sentences, window = None):
+
+	unique_words = list(set([wd for sent in sentences for wd in sent]))
+	mat = np.zeros([len(unique_words, len(unique_words))])
+
+	for sent in sentences:
+
+
+
+
+##### Part 7. Text Generation
 import numpy as np
 from keras.utils import np_utils
 from keras.models import Sequential
@@ -583,18 +784,18 @@ model.fit(X, y, epochs=50, batch_size=86, callbacks=callbacks_list)
 filename1 = "old_weightgs/weights-improvement-19-2.2728.hdf5"
 filename2 = "old_weightgs/weights-improvement-19-1.6940-bigger.hdf5"
 filename3 = "new_weights/weights-improvement-09-1.9432-bigger.hdf5"
+filename4 = "new_weights2/weights-improvement-49-1.4772-bigger.hdf5"
 model.load_weights(filename3)
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 
 int_to_char = dict((i, c) for i, c in enumerate(chars))
 
-start = 5399
+start = 5398
 pattern = dataX[start]
 print ("Seed:")
 seq = ''.join([int_to_char[value] for value in pattern])
 print (seq)
 # generate characters
-res = []
 
 class Node(object):
 	def __init__(self, letter, prob, level, cur_word, cum_prob, cum_seq):
@@ -606,13 +807,12 @@ class Node(object):
 		self.cum_prob = cum_prob
 		self.cum_seq = cum_seq
 
-result = Node(pattern[-1], 1, 0, "", 0, seq)
 
 def is_word(wd):
 	s = ""
 	for c in wd:
 		if c in "abcdefghijklmnopqrstuvwxyz":
-			s.append(c)
+			s = s+c
 	return s in text_split_punc
 
 def start_word(wd):
@@ -620,29 +820,80 @@ def start_word(wd):
 		if len(w) >= len(wd):
 			if w[:len(wd)] == wd:
 				return True
+	#print(wd)
 	return False
 
+import math
+
 def predict(node):
-	if node.level == 1:
-		return
-	new_seq = node.cur_seq[-100:]
+	if node.level == 10:
+		return node
+	new_seq = node.cum_seq[-100:]
 	pattern = [char_to_int[c] for c in new_seq]
 	x = np.reshape(pattern, (1, len(pattern), 1))
 	x = x / float(n_vocab)
 	prediction = model.predict(x, verbose=0)[0]
-	top_10 = prediction.argsort()[-10:][::-1]
+	top_10 = prediction.argsort()[-5:][::-1]
 	for i in range(len(top_10)):
 		char = int_to_char[top_10[i]]
 		pred = prediction[top_10[i]]
 		if char not in "abcdefghijklmnopqrstuvwxyz":
 			if is_word(node.cur_word):
-				node.children.append(Node(char, pred, node.level +1, "", node.cum_prob + math.log(prob), node.cum_seq + char))
+				node.children.append(Node(char, pred, node.level +1, "", node.cum_prob + math.log(pred), node.cum_seq + char))
 		else:
 			if start_word(node.cur_word + char):
-				node.children.append(Node(char, pred, node.level + 1, node.cur_word + char, node.cum_prob + math.log(prob), node.cum_seq + char))
-	for child in node.children:
-		predict(child)
+				node.children.append(Node(char, pred, node.level + 1, node.cur_word + char, node.cum_prob + math.log(pred), node.cum_seq + char))
+	best = Node(0,0,0,0,-float('inf'),0)
+	for i in range(len(node.children)):
+		nod = predict(node.children[i])
+		if nod.cum_prob > best.cum_prob:
+			best = nod
+	return best
 
+result = Node(pattern[-1], 1, 0, "", 0, seq)
+fin = predict(result)
+fin.cum_seq
+
+
+def pred2(start):
+	pattern = [char_to_int[c] for c in start]
+	cur_word = ""
+	res = []
+	for i in range(300):
+		x = np.reshape(pattern, (1, len(pattern), 1))
+		x = x / float(n_vocab)
+		prediction = model.predict(x, verbose=0)[0]
+		top_10 = prediction.argsort()[-len(prediction):][::-1]
+		j = 0
+		index = top_10[j]
+		index0=index
+		char = int_to_char[index]
+		char0=char
+		while True:
+			if char not in "abcdefghijklmnopqrstuvwxyz":
+				if is_word(cur_word + char):
+					cur_word = ""
+					break
+			else:
+				if start_word(cur_word + char):
+					cur_word = cur_word + char
+					break
+			j = j+1
+			if j == len(top_10):
+				j=0
+				index = top_10[j]
+				char = int_to_char[index]
+				break
+			index = top_10[j]
+			char = int_to_char[index]
+		print(str(i) + '\t' + str(j) + '\t' + str(index0) + '\t'+ str(index) + '\t' +str(char0) + '\t'+str(char))
+		seq_in = [int_to_char[value] for value in pattern]
+		res.append(char)
+		pattern.append(index)
+		pattern = pattern[1:len(pattern)]
+	return "".join(res)
+
+pred2(seq)
 
 for i in range(300):
 	x = np.reshape(pattern, (1, len(pattern), 1))

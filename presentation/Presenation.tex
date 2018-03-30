@@ -282,7 +282,47 @@ TextRank is a popular keyword extraction algorithm that determines the importanc
 
 
 \begin{frame}{TextRank: Step 1 (Build graph representing text)}
-
+\begin{center}
+	
+	{\footnotesize \ttfamily ['nempe',
+		'ab',
+		'iis',
+		'qui',
+		'haec',
+		'disciplinis',
+		'informata',
+		'alia',
+		'moribus',
+		'confirmarunt',
+		',',
+		'sanxerunt',
+		'autem',
+		'alia',
+		'legibus',
+		'.']}\\
+	\vspace{12pt}
+	
+	{\footnotesize \ttfamily[('nempe', 'adverb'),
+	{\color{red} ('ab', 'preposition')},
+	{\color{red}('is', 'pronoun')},
+	{\color{red}('qui', 'pronoun')},
+	{\color{red}('hic', 'pronoun')},
+	('disciplina', 'noun'),
+	('informo', 'noun'),
+	('alius2', 'adjective'),
+	('mos', 'noun'),
+	('confirmo', 'verb'),
+	('sancio', 'verb'),
+	{\color{red}('autem', 'conjunction')},
+	('alius2', 'adjective'),
+	('lex', 'noun')]}\\
+\vspace{12pt}
+	{\footnotesize \ttfamily[('disciplina', 'noun'),
+	('informo', 'noun'),
+	('alius2', 'adjective'),
+	('mos', 'noun'),
+	('lex', 'noun')]}
+\end{center}
 \end{frame}
 
 \section{Predicting Missing Text: LSTM Neural Networks}
