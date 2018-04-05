@@ -1,0 +1,1 @@
+[38;5;2mThis is green.[0m

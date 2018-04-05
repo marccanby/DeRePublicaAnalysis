@@ -271,7 +271,7 @@ def plot_region(x_bounds, y_bounds, points):
     
     ax = slice.plot.scatter("x", "y", s=35, figsize=(10, 8))
     for i, point in slice.iterrows():
-        ax.text(point.x + 0.005, point.y + 0.005, point.word, fontsize=11)
+        ax.text(point.x + 0.005, point.y + 0.005, point.word, fontsize=18)
 
     plt.show()
 
@@ -293,11 +293,15 @@ def plot_area_of_word(word, points):
 
 ##### Part III Helper functions
 import random
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+CLUSTER_COLORS = {0: '#1b9e77', 1: '#d95f02', 2: '#7570b3', 3: '#e7298a', 4: '#66a61e', 5: '#000000'}
 
 def plot_clusters(pos, clusters):
 	xs, ys = pos[:, 0], pos[:, 1]
 	cluster_names = {i:str(i) for i in range(len(set(clusters)))}
-	cluster_colors = {0: '#1b9e77', 1: '#d95f02', 2: '#7570b3', 3: '#e7298a', 4: '#66a61e', 5: '#000000'}
 	df = pd.DataFrame(dict(x=xs, y=ys, label=clusters))
 
 	#group by cluster
@@ -312,7 +316,7 @@ def plot_clusters(pos, clusters):
 	#note that I use the cluster_name and cluster_color dicts with the 'name' lookup to return the appropriate color/label
 	for name, group in groups:
 	    ax.plot(group.x, group.y, marker='o', linestyle='', ms=12, 
-	            label=cluster_names[name], color=cluster_colors[name], 
+	            label=cluster_names[name], color=CLUSTER_COLORS[name], 
 	            mec='none')
 	    ax.set_aspect('auto')
 	    ax.tick_params(\
@@ -344,18 +348,18 @@ def sample_by_cluster(cluster_no, n_sample, clusters, original_sentences, good_i
 	for sent in to_return:
 		print(sent)
 
-def sample_by_region(xlim, ylim, n_sample):
-	in_range = []
-	for i in range(len(xs)):
-		x = xs[i]
-		y = ys[i]
-		if x >= xlim[0] and x <= xlim[1] and y >= ylim[0] and y <= ylim[1]:
-			in_range.append(i)
-	random.shuffle(in_range)
-	chosen = idxes[:n_sample]
-	to_return = [original_sentences[good_idxes[c]] for c in chosen]
-	for sent in to_return:
-		print(sent)
+# def sample_by_region(xlim, ylim, n_sample):
+# 	in_range = []
+# 	for i in range(len(xs)):
+# 		x = xs[i]
+# 		y = ys[i]
+# 		if x >= xlim[0] and x <= xlim[1] and y >= ylim[0] and y <= ylim[1]:
+# 			in_range.append(i)
+# 	random.shuffle(in_range)
+# 	chosen = idxes[:n_sample]
+# 	to_return = [original_sentences[good_idxes[c]] for c in chosen]
+# 	for sent in to_return:
+# 		print(sent)
 
 def show_by_id(ids, n_sample=None):
 	if n_sample is None:
@@ -367,3 +371,21 @@ def show_by_id(ids, n_sample=None):
 	for sent in to_return:
 		print(sent)
 
+def write_entire_text(clusters, original_sentences, good_idxes):
+	doc = SimpleDocTemplate("paragraphs.pdf", pagesize=letter)
+	parts = []
+	styles = [None] * (len(CLUSTER_COLORS) + 1)
+	for i in range(len(styles)):
+		if i == len(CLUSTER_COLORS):
+			styles[i] = ParagraphStyle(name="Normal", fontName="Times-Roman", fontsize=9,textColor = "black")
+		else:
+			styles[i] = ParagraphStyle(name="Normal", fontName="Times-Roman", fontsize=9,textColor = CLUSTER_COLORS[i])
+
+	for i in range(len(original_sentences)):
+		if i not in good_idxes:
+			parts.append(Paragraph(original_sentences[i], styles[len(CLUSTER_COLORS)]))
+		else:
+			good_index = good_idxes.index(i)
+			cluster_no = clusters[good_index]
+			parts.append(Paragraph(original_sentences[i], styles[cluster_no]))
+	doc.build(parts)

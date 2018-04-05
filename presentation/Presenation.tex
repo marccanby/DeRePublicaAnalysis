@@ -48,7 +48,8 @@
 %\usetheme{Szeged}
 %\usetheme{Warsaw}
 
-\title{Computational Analysis of Classical Texts}
+\title{Uncovering Hidden Structure in the \textit{De Re Publica}}
+\subtitle{A Computational Analysis of the Text}
 
 % A subtitle is optional and this may be deleted
 %\subtitle{Optional Subtitle}
@@ -116,6 +117,34 @@ subsectionstyle=show/show/shaded
 \usepackage[]{algorithm2e}
 
 \usepackage{tabto} % tabbing
+
+% Change spacing in outline
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\beamer@sectionintoc}
+{\vfill}
+{\vskip\itemsep}
+{}
+{}
+\makeatother  
+
+% Arrows
+\usepackage{tikz}
+\usetikzlibrary{shapes.arrows}
+
+\tikzset{
+	myarrow/.style={
+		draw,
+		fill=blue,
+		single arrow,
+		minimum height=3ex,
+
+		single arrow head extend=1ex
+	}
+}
+\newcommand{\arrowdown}{%
+	\tikz [baseline=-1ex]{\node [myarrow,rotate=-90] {};}
+}
 
 % Let's get started
 \begin{document}
@@ -203,8 +232,15 @@ subsectionstyle=show/show/shaded
 		'autem',
 		'alia',
 		'legibus',
-		'.']}
-	\vspace{12pt}
+		'.']}\\
+	\begin{tikzpicture}
+	\pgfsetarrowsend{latex}
+	\pgfsetlinewidth{2ex}
+	\pgfpathmoveto{\pgfpointorigin}
+	\pgfpathlineto{\pgfpoint{3.5cm}{2cm}}
+	\pgfusepath{stroke}
+	\useasboundingbox (-02,-0.25) rectangle (0,0.5);
+	\end{tikzpicture}
 	
 	{\ttfamily[('nempe', 'adverb'),
 		{\color{red} ('ab', 'preposition')},
@@ -245,193 +281,10 @@ subsectionstyle=show/show/shaded
 	\end{minipage}
 \end{figure}
 \end{frame}
-\section{Keyword Extraction: Frequency Count and TextRank}
 
-\begin{frame}{Keyword Extraction: Frequency Count}
-\begin{itemize}
-		\setlength\itemsep{1em}
-	\item Goal: Determine a set of keywords that summarizes the text
-	\item Naive approach: Take words in text with highest frequency
-	\begin{center}
-	\begin{tabular}{| c | c || c | c |}
-		\hline
-		\textbf{Word} & \textbf{Frequency} & \textbf{Word} & \textbf{Frequency} \\ \hline
-		res & 191 & magnus & 74 \\ \hline
-		publicus & 163 & civitas & 72 \\ \hline
-		Scipio & 110 & bonus & 70  \\ \hline
-		populus & 103 & Laelius & 66  \\ \hline
-		homo & 94 & rex & 51  \\
-		\hline
-\end{tabular}\\
-\footnotesize{Note: Restricted to nouns and adjectives only}
-\end{center}
-	
-	\item Problem: Does not account for structure of text and relationships between words
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Keyword Extraction: TextRank}
-TextRank is a popular keyword extraction algorithm that determines the importance of a keyword based on its relationship to other keywords.
-\begin{itemize}
-
-	\item Step 1: Build graph representing text
-	\item Step 2: Run keyword extraction algorithm on graph
-	\item Step 3: Merge neighboring keywords and recompute scores
-\end{itemize}
-\end{frame}
+\section{Underlying Word Structure: Word2Vec}
 
 
-\begin{frame}{TextRank: Step 1 (Build graph representing text)}
-\begin{center}
-	
-	{\footnotesize \ttfamily ['nempe',
-		'ab',
-		'iis',
-		'qui',
-		'haec',
-		'disciplinis',
-		'informata',
-		'alia',
-		'moribus',
-		'confirmarunt',
-		',',
-		'sanxerunt',
-		'autem',
-		'alia',
-		'legibus',
-		'.']}\\
-	\vspace{12pt}
-	
-	{\footnotesize \ttfamily[('nempe', 'adverb'),
-	{\color{red} ('ab', 'preposition')},
-	{\color{red}('is', 'pronoun')},
-	{\color{red}('qui', 'pronoun')},
-	{\color{red}('hic', 'pronoun')},
-	('disciplina', 'noun'),
-	('informo', 'noun'),
-	('alius2', 'adjective'),
-	('mos', 'noun'),
-	('confirmo', 'verb'),
-	('sancio', 'verb'),
-	{\color{red}('autem', 'conjunction')},
-	('alius2', 'adjective'),
-	('lex', 'noun')]}\\
-\vspace{12pt}
-	{\footnotesize \ttfamily[('disciplina', 'noun'),
-	('informo', 'noun'),
-	('alius2', 'adjective'),
-	('mos', 'noun'),
-	('lex', 'noun')]}
-\end{center}
-\end{frame}
-
-\section{Predicting Missing Text: LSTM Neural Networks}
-
-% t bound in previous slide
-% simple example
-% encoding
-%  - multiplication and expansion
-%  - machine
-% decoding
-%  - whole syndrome thing
-% why this is the most useful code
-% alternate view - n points
-% applications
-
-%\begin{itemize}
-%\item {
-%First item.
-%\pause % The slide will pause after showing the first item
-%}
-%\item {   
-%Second item.
-%}
-%% You can also specify when the content should appear
-%% by using <n->:
-%\item<3-> {
-%Third item.
-%}
-%\item<4-> {
-%Fourth item.
-%}
-%% or you can use the \uncover command to reveal general
-%% content (not just \items):
-%\item<5-> {
-%Fifth item. \uncover<6->{Extra text in the fifth item.}
-%}
-%\end{itemize}
-
-
-
-%\begin{frame}{Blocks}
-%\begin{block}{Block Title}
-%You can also highlight sections of your presentation in a block, with it's own title
-%\end{block}
-%\begin{theorem}
-%There are separate environments for theorems, examples, definitions and proofs.
-%\end{theorem}
-%\begin{example}
-%Here is an example of an example block.
-%\end{example}
-%\end{frame}
-
-% Placing a * after \section means it will not show in the
-% outline or table of contents.
-%\section*{Summary}
-
-%\begin{frame}{Summary}
-%\begin{itemize}
-%\item
-%The \alert{first main message} of your talk in one or two lines.
-%\item
-%The \alert{second main message} of your talk in one or two lines.
-%\item
-%Perhaps a \alert{third message}, but not more than that.
-%\end{itemize}
-%
-%\begin{itemize}
-%\item
-%Outlook
-%\begin{itemize}
-%\item
-%Something you haven't solved.
-%\item
-%Something else you haven't solved.
-%\end{itemize}
-%\end{itemize}
-%\end{frame}
-
-
-
-% All of the following is optional and typically not needed. 
-%\appendix
-%\section<presentation>*{\appendixname}
-%\subsection<presentation>*{For Further Reading}
-%
-%\begin{frame}[allowframebreaks]
-%\frametitle<presentation>{For Further Reading}
-%
-%\begin{thebibliography}{10}
-%
-%\beamertemplatebookbibitems
-%% Start with overview books.
-%
-%\bibitem{Author1990}
-%A.~Author.
-%\newblock {\em Handbook of Everything}.
-%\newblock Some Press, 1990.
-%
-%
-%\beamertemplatearticlebibitems
-%% Followed by interesting articles. Keep the list short. 
-%
-%\bibitem{Someone2000}
-%S.~Someone.
-%\newblock On this and that.
-%\newblock {\em Journal of This and That}, 2(1):50--100,
-%2000.
-%\end{thebibliography}
-%\end{frame}
 
 \end{document}
 

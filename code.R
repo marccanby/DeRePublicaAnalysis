@@ -4,22 +4,35 @@ library(ggplot2)
 library("reshape2")
 library("plyr")
 
-cicero_data <- read.csv("cicero_data.csv")
-tacitus_data <- read.csv("tacitus_data.csv")
-livy_data <- read.csv("livy_data.csv")
-
-mean(cicero_data$num_words)
-
-cicero_data <- subset(cicero_data, select=-c(num_sentences, num_words,num_chars))
-tacitus_data <- subset(tacitus_data, select=-c(num_sentences, num_words,num_chars))
-livy_data <- subset(livy_data, select=-c(num_sentences, num_words,num_chars))
-
 cic_phil_txts <- c("repub", "inventione", "orator", "optgen", "topica", "oratore", "fato", "paradoxa", "partitione", "brut", "consulatu", "leg", "fin", "tusc", "nd", "acad", "cat", "amic", "divinatione", "off", "compet")
 cic_orat_txts <- c("quinc", "rosccom","legagr", "ver", "imp", "caecina","cluentio","rabirio", "cat", "murena", "sulla", "flacco", "arch", "postreditum", "domo", "haruspicum", "plancio", "sestio", "vatin", "cael", "prov", "balbo", "milo", "piso", "scauro", "fonteio", "rabirio", "marc", "lig", "deio", "phil")
 cic_epis_txts <- c("att", "fam", "brut", "quinc")
 
+cicero_data <- read.csv("cicero_data.csv")
+cicero_phil <- cicero_data[cicero_data$text_name %in% cic_phil_txts,]
+cicero_orat <- cicero_data[cicero_data$text_name %in% cic_orat_txts,]
+cicero_epis <- cicero_data[cicero_data$text_name %in% cic_epis_txts,]
+tacitus_data <- read.csv("tacitus_data.csv")
+livy_data <- read.csv("livy_data.csv")
+
+sum <- c("num_words", "num_chars", "num_sentences")
+for (s in sum) {
+  print(mean(cicero_phil[[s]]))
+  print(mean(cicero_orat[[s]]))
+  print("----")
+}
+
+cicero_data <- subset(cicero_data, select=-c(num_sentences, num_words,num_chars))
+cicero_phil <- cicero_data[cicero_data$text_name %in% cic_phil_txts,]
+cicero_orat <- cicero_data[cicero_data$text_name %in% cic_orat_txts,]
+cicero_epis <- cicero_data[cicero_data$text_name %in% cic_epis_txts,]
+tacitus_data <- subset(tacitus_data, select=-c(num_sentences, num_words,num_chars))
+livy_data <- subset(livy_data, select=-c(num_sentences, num_words,num_chars))
+
+
 repub <- cicero_data[cicero_data$text_name == 'repub',]
-cic_phil <- data.frame("cic_phil", as.list(apply(cicero_data[cicero_data$text_name %in% cic_phil_txts,][,-1], 2, sum)))
+cic_phil <- data.frame("cic_phil", as.list(apply(cicero_phil[,-1], 2, sum)))
+cic_orat <- data.frame("cic_orat", as.list(apply(cicero_orat[,-1], 2, sum)))
 liv <- data.frame("liv", as.list(apply(livy_data[,-1], 2, sum)))
 tac <- data.frame("tac", as.list(apply(tacitus_data[,-1], 2, sum)))
 
@@ -45,5 +58,7 @@ barplot(repub, title = "Part of Speech Distribution in De Re Publica")
 dev.off()
 
 png(filename="presentation/fig2.png", width=900, height = 800)
-barplot(cic_phil, title = "Average Part of Speech Distribution in Ciceronian Philosophy Texts")
+barplot(cic_phil, title = "Average Part of Speech Distribution in Ciceronian Philosophy")
 dev.off()
+
+barplot(cic_orat, title = "Average Part of Speech Distribution in Ciceronian Oratory")
