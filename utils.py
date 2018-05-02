@@ -226,7 +226,10 @@ def get_tokens(sentence, remove_stop = True):
 		if wd in PUNC + [""]:
 			continue
 		else:
-			token = lemmatize_word(wd)[0]
+			try:
+				token = lemmatize_word(wd)[0]
+			except:
+				continue
 			if remove_stop and re.sub(r'[0-9]+', '',token) in STOPS:
 				continue
 			res.append((wd, token, poses[i]))

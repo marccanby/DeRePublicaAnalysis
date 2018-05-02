@@ -1,0 +1,67 @@
+\begin{thebibliography}{10}
+
+\bibitem{kindqueen}
+Allen.
+\newblock Word2vec - deep learning.
+\newblock \url{http://www.lifestyletrading101.com/word2vec-deep-learning/},
+  2018.
+
+\bibitem{code}
+Marc~E. Canby.
+\newblock De re publica computational analysis.
+\newblock \url{https://github.com/marccanby/DeRePublicaAnalysis}, 2018.
+
+\bibitem{drp}
+M.~Tullius Cicero.
+\newblock {\em De Re Publica}.
+\newblock The Latin Library.
+\newblock \url{http://www.thelatinlibrary.com/cicero/repub.shtml}.
+
+\bibitem{cltk}
+Kyle P.~Johnson et~al.
+\newblock Cltk: The classical languages toolkit.
+\newblock \url{https://github.com/cltk/cltk}, 2014--2017.
+\newblock 10.5281/zenodo.593336.
+
+\bibitem{towards}
+Conor McDonald.
+\newblock Machine learning fundamentals (ii): Neural networks.
+\newblock
+  \url{https://towardsdatascience.com/machine-learning-fundamentals-ii-neural-networks-f1e7b2cb3eef},
+  2017.
+
+\bibitem{cbow}
+Alex Minnaar.
+\newblock Word2vec tutorial part ii: The continuous bag-of-words model.
+\newblock
+  \url{http://mccormickml.com/assets/word2vec/Alex_Minnaar_Word2Vec_Tutorial_Part_II_The_Continuous_Bag-of-Words_Model.pdf},
+  2015.
+
+\bibitem{doccluster}
+Brandon Rose.
+\newblock Document clustering with python.
+\newblock \url{http://brandonrose.org/clustering}, 2015.
+
+\bibitem{dimred}
+Scikit-learn.
+\newblock Api reference: Sklearn.decomposition.
+\newblock
+  \url{http://scikit-learn.org/stable/modules/classes.html#module-sklearn.decomposition},
+  2007-2017.
+
+\bibitem{gensim}
+Miguel Stephane.
+\newblock Build and visualize word2vec model with gensim.
+\newblock \url{https://github.com/MiguelSteph/word2vec-with-gensim}, 2017.
+
+\bibitem{pythonnlp}
+Jalaj Thanaki.
+\newblock {\em Python Natural Language Processing}.
+\newblock Packt Publishing, 2017.
+
+\bibitem{ggplot}
+Hadley Wickham.
+\newblock Ggplot2.
+\newblock \url{http://ggplot2.org/}, 2013.
+
+\end{thebibliography}

@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2015)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: Final Report.aux
+The style file: plain.bst
+Database file #1: bibliography.bib
+Warning--empty year in drp
+You've used 11 entries,
+            2118 wiz_defined-function locations,
+            549 strings with 5323 characters,
+and the built_in function-call counts, 2343 in all, are:
+= -- 221
+> -- 77
+< -- 0
++ -- 33
+- -- 22
+* -- 74
+:= -- 405
+add.period$ -- 35
+call.type$ -- 11
+change.case$ -- 42
+chr.to.int$ -- 0
+cite$ -- 12
+duplicate$ -- 87
+empty$ -- 243
+format.name$ -- 22
+if$ -- 510
+int.to.chr$ -- 0
+int.to.str$ -- 11
+missing$ -- 4
+newline$ -- 60
+num.names$ -- 22
+pop$ -- 89
+preamble$ -- 1
+purify$ -- 33
+quote$ -- 0
+skip$ -- 72
+stack$ -- 0
+substring$ -- 55
+swap$ -- 11
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 40
+warning$ -- 1
+while$ -- 22
+width$ -- 13
+write$ -- 115
+(There was 1 warning)
